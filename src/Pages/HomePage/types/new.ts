@@ -1,4 +1,8 @@
-
+export interface NewsFilters {
+  query: string ;
+  selectedChannel: string | null;
+  category: string | null;
+}
 export interface NewsArticle {
   source: {
     id: string | null;

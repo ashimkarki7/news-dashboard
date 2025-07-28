@@ -1,23 +1,23 @@
-import {type FC, Fragment, memo} from 'react';
-import type {NewsSource} from '@pages/HomePage/types/new.ts';
+import {type Dispatch, type FC, type SetStateAction,Fragment, memo, } from 'react';
+import type {NewsFilters, NewsSource} from '@pages/HomePage/types/new.ts';
 
 
 interface DashboardOverviewProps {
-    selectedChannel: string | null;
-    setSelectedChannel: (id: string) => void;
+    filters: NewsFilters;
+    setFilters: Dispatch<SetStateAction<NewsFilters>>;
     overViewChannels: NewsSource[];
     overViewLoading:boolean;
 }
 
 const DashboardOverview: FC<DashboardOverviewProps> = (props) => {
-    const {overViewChannels,selectedChannel,setSelectedChannel,overViewLoading} = props;
+    const {overViewChannels,filters,setFilters,overViewLoading} = props;
 
 
     return (<div className="mb-5">
             <div className="d-flex  align-items-center mb-4 ">
                 <h2 className="text-white fw-bold mb-0 ">
                     <i className="fas fa-chart-line me-3"></i>
-                    {`Sources ${selectedChannel ? `from ${selectedChannel}` : ''}`}
+                    {`Sources ${filters?.selectedChannel ? `from ${filters?.selectedChannel}` : ''}`}
                 </h2>
             </div>
 
@@ -93,15 +93,21 @@ const DashboardOverview: FC<DashboardOverviewProps> = (props) => {
                                                         <div key={slideIndex * 3 + index} className="col-12 col-sm-6 col-lg-4"
                                                         >
                                                             <div
-                                                                onClick={() => setSelectedChannel(metric?.id)}
+                                                                onClick={() =>
+                                                                    setFilters((prev) => ({
+                                                                        ...prev,
+                                                                        query:'',
+                                                                        category:'*',
+                                                                        selectedChannel: metric?.id,
+                                                                    }))}
                                                                 style={{
                                                                     cursor: "pointer",
                                                                     backgroundColor:
-                                                                        selectedChannel === metric?.id ? "rgba(13, 110, 253, 0.3)" : 'rgba(33, 37, 41, 0.25)',
+                                                                        filters?.selectedChannel === metric?.id ? "rgba(13, 110, 253, 0.3)" : 'rgba(33, 37, 41, 0.25)',
                                                                 }}
                                                                 className={`card   bg-opacity-25 border-light border-opacity-25 h-100
                                                     ${
-                                                                    selectedChannel === metric?.id ? "border-primary border-2" : "bg-dark"
+                                                                    filters?.selectedChannel === metric?.id ? "border-primary border-2" : "bg-dark"
                                                                 }
                                                     `}>
                                                                 <div className="card-body">

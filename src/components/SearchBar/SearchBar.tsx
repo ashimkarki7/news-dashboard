@@ -1,38 +1,41 @@
 
-import React, {useState, useCallback, useEffect} from 'react'
+import React, { useCallback, useEffect, type Dispatch, type SetStateAction} from 'react'
 import {useAppDispatch, useAppSelector} from '@/store/reduxHook.ts';
 import { debounce } from '@/Utility/debounce';
 import {getNews} from '@pages/HomePage/slice/slice.ts';
-import type {NewsQueryParams} from '@pages/HomePage/types/new.ts';
+import type {NewsFilters, NewsQueryParams} from '@pages/HomePage/types/new.ts';
 
 
 interface SearchBarProps {
-  selectedChannel: string | null;
-  setSelectedChannel: (id: string) => void;
+    filters: NewsFilters;
+    setFilters: Dispatch<SetStateAction<NewsFilters>>;
 
 }
 
 const SearchBar: React.FC<SearchBarProps> = (props) => {
-  const {selectedChannel,setSelectedChannel} = props;
+  const {filters,setFilters} = props;
   const dispatch = useAppDispatch();
   const loading = useAppSelector((state) => state.newsData.loading);
-  const [query, setQuery] = useState('');
 
   const debouncedSearch = useCallback(
       debounce((value: string) => {
-        const payload: NewsQueryParams = value ? { q: value,searchIn: 'title,description', sources: selectedChannel ?? '' } : {};
+        const payload: NewsQueryParams = value ? { q: value,searchIn: 'title,description', sources: filters?.selectedChannel ?? '' } : {};
         dispatch(getNews(payload));
       }, 500),
       [dispatch]
   );
 
   useEffect(() => {
-    debouncedSearch(query.trim());
-  }, [query, debouncedSearch]);
+    debouncedSearch(filters?.query.trim());
+  }, [filters?.query, debouncedSearch]);
 
   const handleClear = () => {
-    setQuery('');
-    setSelectedChannel('');
+      setFilters((prev) => ({
+          ...prev,
+          query: '',
+          category:'',
+          selectedChannel: '',
+      }));
     dispatch(getNews({}));
   };
 
@@ -46,8 +49,15 @@ const SearchBar: React.FC<SearchBarProps> = (props) => {
                     type="text"
                     className="form-control bg-dark bg-opacity-25 border-light border-opacity-25 text-white"
                     placeholder="Search breaking news, trending topics, or specific stories..."
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
+                    value={filters?.query}
+                    onChange={(e) =>
+                        setFilters((prev) => ({
+                            ...prev,
+                            query: e.target.value,
+                            category:'',
+                            selectedChannel: '',
+                        }))
+                       }
                     disabled={loading}
                     style={{
                       borderRadius: '50px 0 0 50px',
@@ -67,10 +77,10 @@ const SearchBar: React.FC<SearchBarProps> = (props) => {
           </div>
         </form>
 
-        {query && (
+        {filters?.query && (
             <div className="text-center mt-3">
           <span className="badge bg-light text-dark me-2">
-            {`Showing results for: "${query}"`}
+            {`Showing results for: "${filters?.query}"`}
           </span>
               <button
                   className="btn btn-sm btn-outline-light"
@@ -82,10 +92,10 @@ const SearchBar: React.FC<SearchBarProps> = (props) => {
 
             </div>
         )}
-        {selectedChannel && (
+        {filters?.selectedChannel && (
         <div className="text-center mt-3">
                   <span className="badge bg-light text-dark me-2">
-        from source: {selectedChannel}
+        from source: {filters?.selectedChannel}
 
           </span>
               <button
