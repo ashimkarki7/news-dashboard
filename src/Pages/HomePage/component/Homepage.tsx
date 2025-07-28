@@ -4,10 +4,13 @@ import DashboardOverview from '@components/DashboardOverView/DashboardOverview.t
 import SearchBar from '@components/SearchBar/SearchBar.tsx';
 import CategoryFilter from '@components/CategoryFilter/CategoryFilter.tsx';
 import type {NewsFilters} from '@pages/HomePage/types/new.ts';
+import ErrorAlert from '@components/ErrorAlert/ErrorAlert.tsx';
+import LoadingSpinner from '@components/LoadingSpinner/LoadingSpinner.tsx';
+import ArticleGrid from '@components/ArticleGrid/ArticleGrid.tsx';
 
 
 const HomepageComponent: React.FC<HomepageProps> = (props) => {
-  const { getNews,getOverView, newsLoading,overViewChannels,overViewLoading } = props;
+  const { getNews,getOverView, newsLoading,overViewChannels,overViewLoading,newsError,news } = props;
 
     const [filters, setFilters] = useState<NewsFilters>({
         query:'',
@@ -20,7 +23,7 @@ const HomepageComponent: React.FC<HomepageProps> = (props) => {
       getOverView();
       getNews();
   }, []);
-
+console.log(news,'news');
 
 
   return (
@@ -36,6 +39,37 @@ const HomepageComponent: React.FC<HomepageProps> = (props) => {
                 <CategoryFilter newsLoading={newsLoading} filters={filters} setFilters={setFilters}    />
             </div>
         </div>
+        {newsError && (
+            <div className="row mb-4">
+                <div className="col-12">
+                    <ErrorAlert message={newsError} />
+                </div>
+            </div>
+        )}
+
+
+        <div className="row">
+            <div className="col-12">
+                <div className="card bg-dark bg-opacity-25 border-light border-opacity-25 mb-4">
+                    <div className="card-body">
+                        <h4 className="card-title text-white mb-3">
+                            <i className="fas fa-newspaper me-2"></i>
+                            Latest News Articles
+                        </h4>
+                        {newsLoading && news?.length === 0 ? (
+                            <LoadingSpinner />
+                        ) : (
+                            <Fragment>
+                                 <ArticleGrid articles={news} />
+                            </Fragment>
+
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </Fragment>
   );
 };

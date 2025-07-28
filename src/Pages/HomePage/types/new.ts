@@ -15,6 +15,9 @@ export interface NewsArticle {
   urlToImage: string | null;
   publishedAt: string;
   content: string | null;
+  category?: string
+  trending?: boolean
+  readTime?: number
 }
 export interface NewsQueryParams {
   skip?: number;

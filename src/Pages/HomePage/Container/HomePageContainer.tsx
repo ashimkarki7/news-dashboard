@@ -11,6 +11,8 @@ const HomePageContainer = (props: any) => {
   const overViewChannels = useAppSelector((state) => state?.newsData?.overview?.sources);
   const overViewLoading = useAppSelector((state) => state?.newsData?.overViewLoading);
 
+  const newsError = useAppSelector((state) => state?.newsData?.error);
+
 
   props = { ...props,overViewChannels, news, newsLoading,overViewLoading };
   const getNews = (formData?:NewsQueryParams) => {
@@ -21,6 +23,6 @@ const HomePageContainer = (props: any) => {
     return dispatch(homepageSlice.getOverView());
   };
 
-  return <HomepageComponent {...props} getNews={getNews} getOverView={getOverView} />;
+  return <HomepageComponent {...props} getNews={getNews} getOverView={getOverView} newsError={newsError} />;
 };
 export default HomePageContainer;
