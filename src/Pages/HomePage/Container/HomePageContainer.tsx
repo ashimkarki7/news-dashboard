@@ -7,10 +7,11 @@ const HomePageContainer = (props: any) => {
 
   const news = useAppSelector((state) => state?.newsData?.articles);
   const newsLoading = useAppSelector((state) => state?.newsData?.loading);
-  const overViewChannels = useAppSelector((state) => state?.newsData?.overview?.sources
-  );
+  const overViewChannels = useAppSelector((state) => state?.newsData?.overview?.sources);
+  const overViewLoading = useAppSelector((state) => state?.newsData?.overViewLoading);
 
-  props = { ...props,overViewChannels, news, newsLoading };
+
+  props = { ...props,overViewChannels, news, newsLoading,overViewLoading };
   const getNews = () => {
     return dispatch(homepageSlice.getNews());
   };

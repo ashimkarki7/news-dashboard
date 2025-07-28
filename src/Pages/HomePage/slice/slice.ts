@@ -5,6 +5,7 @@ import type { NewsState } from '../types/new.ts';
 const initialState: NewsState = {
   articles: [],
   overview: null,
+  overViewLoading: true,
   error: '',
   loading: true,
 };
@@ -70,17 +71,17 @@ const newsSlice = createSlice({
       state.error = action.payload?.toString();
     });
     builder.addCase(getOverView.pending, (state) => {
-      state.loading = true;
+      state.overViewLoading = true;
       state.error = '';
       state.overview  = null;
     });
 
     builder.addCase(getOverView.fulfilled, (state, action) => {
-      state.loading = false;
+      state.overViewLoading = false;
       state.overview = action.payload;
     });
     builder.addCase(getOverView.rejected, (state, action) => {
-      state.loading = false;
+      state.overViewLoading = false;
       state.overview  = null;
       state.error = action.payload?.toString();
     });

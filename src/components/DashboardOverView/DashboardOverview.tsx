@@ -1,4 +1,4 @@
-import  {type FC,memo} from 'react';
+import {type FC, Fragment, memo} from 'react';
 import type {NewsSource} from '@pages/HomePage/types/new.ts';
 
 
@@ -6,10 +6,11 @@ interface DashboardOverviewProps {
     selectedChannel: string | null;
     setSelectedChannel: (id: string) => void;
     overViewChannels: NewsSource[];
+    overViewLoading:boolean;
 }
 
 const DashboardOverview: FC<DashboardOverviewProps> = (props) => {
-    const {overViewChannels,selectedChannel,setSelectedChannel} = props;
+    const {overViewChannels,selectedChannel,setSelectedChannel,overViewLoading} = props;
 
 
     return (<div className="mb-5">
@@ -39,49 +40,98 @@ const DashboardOverview: FC<DashboardOverviewProps> = (props) => {
                         data-bs-interval="4000"
                     >
                         <div className="carousel-inner">
-                            {overViewChannels?.length > 0 && Array.from({length: Math.ceil(overViewChannels?.length / 3)}).map((_, slideIndex) => (
-                                <div key={slideIndex} className={`carousel-item ${slideIndex === 0 ? 'active' : ''}`}>
+                            {overViewLoading ? (
+                                <div className="carousel-item active">
                                     <div className="row g-3 g-md-4 justify-content-center">
-                                        {overViewChannels.slice(slideIndex * 3, slideIndex * 3 + 3).map((metric, index) => (
-                                            <div key={slideIndex * 3 + index} className="col-12 col-sm-6 col-lg-4"
-                                             >
-                                                <div
-                                                    onClick={() => setSelectedChannel(metric?.id)}
-                                                    style={{
-                                                        cursor: "pointer",
-                                                        backgroundColor:
-                                                            selectedChannel === metric?.id ? "rgba(13, 110, 253, 0.3)" : 'rgba(33, 37, 41, 0.25)',
-                                                    }}
-                                                    className={`card   bg-opacity-25 border-light border-opacity-25 h-100
-                                                    ${
-                                                        selectedChannel === metric?.id ? "border-primary border-2" : "bg-dark"
-                                                    }
-                                                    `}>
+                                        {Array.from({ length: 3 }).map((_, index) => (
+                                            <div key={index} className="col-12 col-sm-6 col-lg-4">
+                                                <div className="card bg-dark bg-opacity-25 border-light border-opacity-25 h-100">
                                                     <div className="card-body">
-                                                        <div
-                                                            className="d-flex align-items-center justify-content-between mb-3">
+                                                        <div className="d-flex align-items-center justify-content-between mb-3">
                                                             <div
-                                                                className={`bg-primary rounded-3 p-3 d-flex align-items-center justify-content-center`}
-                                                                style={{width: '50px', height: '50px'}}
+                                                                className="bg-secondary rounded-3 p-3 d-flex align-items-center justify-content-center shimmer"
+                                                                style={{ width: "50px", height: "50px" }}
                                                             >
-                                                                <i className={`fas fa-newspaper text-white`}></i>
+                                                                <div className="spinner-border spinner-border-sm text-light" role="status">
+                                                                    <span className="visually-hidden">Loading...</span>
+                                                                </div>
                                                             </div>
-                                                            <span
-                                                                className={`badge bg-success`}
-                                                            >
-                               Language : {metric?.language?.toUpperCase()}
-                              </span>
+                                                            <div
+                                                                className="bg-secondary rounded shimmer"
+                                                                style={{ width: "40px", height: "20px" }}
+                                                            ></div>
                                                         </div>
 
-                                                        <div className="h2 text-white fw-bold mb-1">{metric.name}</div>
                                                         <div
-                                                            className="text-white-50 fw-semibold mb-2">Country {metric?.country || '-'}</div>
-                                                        <div className="text-white-50 small">{metric.description}</div>
+                                                            className="bg-secondary rounded shimmer mb-1"
+                                                            style={{ width: "80%", height: "40px" }}
+                                                        ></div>
+                                                        <div
+                                                            className="bg-secondary rounded shimmer mb-2"
+                                                            style={{ width: "60%", height: "20px" }}
+                                                        ></div>
+                                                        <div
+                                                            className="bg-secondary rounded shimmer"
+                                                            style={{ width: "90%", height: "16px" }}
+                                                        ></div>
+
+                                                        <div className="progress mt-3" style={{ height: "3px" }}>
+                                                            <div className="progress-bar bg-secondary shimmer" style={{ width: "100%" }}></div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>))}
+                                            </div>
+                                        ))}
                                     </div>
-                                </div>))}
+                                </div>
+                                ) :(
+                                    <Fragment>
+                                        { Array?.from({length: Math.ceil(overViewChannels?.length / 3)})?.map((_, slideIndex) => (
+                                            <div key={slideIndex} className={`carousel-item ${slideIndex === 0 ? 'active' : ''}`}>
+                                                <div className="row g-3 g-md-4 justify-content-center">
+                                                    {overViewChannels?.slice(slideIndex * 3, slideIndex * 3 + 3)?.map((metric, index) => (
+                                                        <div key={slideIndex * 3 + index} className="col-12 col-sm-6 col-lg-4"
+                                                        >
+                                                            <div
+                                                                onClick={() => setSelectedChannel(metric?.id)}
+                                                                style={{
+                                                                    cursor: "pointer",
+                                                                    backgroundColor:
+                                                                        selectedChannel === metric?.id ? "rgba(13, 110, 253, 0.3)" : 'rgba(33, 37, 41, 0.25)',
+                                                                }}
+                                                                className={`card   bg-opacity-25 border-light border-opacity-25 h-100
+                                                    ${
+                                                                    selectedChannel === metric?.id ? "border-primary border-2" : "bg-dark"
+                                                                }
+                                                    `}>
+                                                                <div className="card-body">
+                                                                    <div
+                                                                        className="d-flex align-items-center justify-content-between mb-3">
+                                                                        <div
+                                                                            className={`bg-primary rounded-3 p-3 d-flex align-items-center justify-content-center`}
+                                                                            style={{width: '50px', height: '50px'}}
+                                                                        >
+                                                                            <i className={`fas fa-newspaper text-white`}></i>
+                                                                        </div>
+                                                                        <span
+                                                                            className={`badge bg-success`}
+                                                                        >
+                               Language : {metric?.language?.toUpperCase()}
+                              </span>
+                                                                    </div>
+
+                                                                    <div className="h2 text-white fw-bold mb-1">{metric.name}</div>
+                                                                    <div
+                                                                        className="text-white-50 fw-semibold mb-2">Country {metric?.country || '-'}</div>
+                                                                    <div className="text-white-50 small">{metric.description}</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>))}
+                                                </div>
+                                            </div>))}
+                                    </Fragment>
+                            )}
+
                         </div>
                     </div>
 

@@ -4,7 +4,7 @@ import DashboardOverview from '@components/DashboardOverView/DashboardOverview.t
 
 
 const HomepageComponent: React.FC<HomepageProps> = (props) => {
-  const { getNews,getOverView, news, newsLoading,overViewChannels } = props;
+  const { getNews,getOverView, news, newsLoading,overViewChannels,overViewLoading } = props;
   console.log('home', newsLoading,news);
   const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
 
@@ -15,7 +15,7 @@ const HomepageComponent: React.FC<HomepageProps> = (props) => {
 
   return (
     <Fragment>
-      <DashboardOverview selectedChannel={selectedChannel} setSelectedChannel={setSelectedChannel} overViewChannels={overViewChannels}/>
+      <DashboardOverview overViewLoading={overViewLoading} selectedChannel={selectedChannel} setSelectedChannel={setSelectedChannel} overViewChannels={overViewChannels}/>
     </Fragment>
   );
 };

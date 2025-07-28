@@ -32,5 +32,6 @@ export interface  NewsState {
     sources: NewsSource[];
   } | null;
   error: string | undefined;
+  overViewLoading: boolean;
   loading: boolean;
 }
