@@ -5,10 +5,7 @@ export const httpBase = () => {
 
   const V2Headers = {
     Accept: '*',
-    'Content-Type': 'text/plain',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers':
-      'Origin, X-Requested-With, Content-Type, Accept',
+
   };
 
   // response_object.header("Access-Control-Allow-Origin", "*");

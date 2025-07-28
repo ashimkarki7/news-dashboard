@@ -1,4 +1,5 @@
 import HeaderStyles from '../Header/Header.module.css';
+import {NavLink} from 'react-router';
 
 export const Header = () => {
   return (
@@ -24,14 +25,24 @@ export const Header = () => {
             <div className="collapse navbar-collapse" id="navbarNav">
               <ul className="navbar-nav ms-auto">
                 <li className="nav-item">
-                  <a className="nav-link text-white fw-semibold px-3 active" href="#">
+                  <NavLink
+                      to="/"
+                      className={({ isActive }) =>
+                          `nav-link text-white fw-semibold px-3 ${isActive ? 'active' : 'not-active'}`
+                      }
+                  >
                     <i className="fas fa-home me-2"></i>Dashboard
-                  </a>
+                  </NavLink>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link text-white fw-semibold px-3" href="#">
+                  <NavLink
+                      to="/profile/test"
+                      className={({ isActive }) =>
+                          `nav-link text-white fw-semibold px-3 ${isActive ? 'active' : 'not-active'}`
+                      }
+                  >
                     <i className="fas fa-user me-2"></i>Profile
-                  </a>
+                  </NavLink>
                 </li>
               </ul>
             </div>

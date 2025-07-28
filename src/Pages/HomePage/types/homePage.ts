@@ -1,6 +1,9 @@
+import type {NewsArticle, NewsSource} from './new.ts';
+
 export interface HomepageProps {
-  // getLocations: () => void;
-  // locationLoading: boolean;
-  // locations: Location[];
-  // type: string;
+    news: NewsArticle[];
+    newsLoading: boolean;
+    overViewChannels: NewsSource[];
+    getNews: () => void;
+    getOverView: () => void;
 }

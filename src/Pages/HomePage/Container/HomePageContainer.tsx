@@ -5,14 +5,20 @@ import * as homepageSlice from '../slice/slice.ts';
 const HomePageContainer = (props: any) => {
   const dispatch = useAppDispatch();
 
-  const news = useAppSelector((state) => state?.newsData?.payload);
+  const news = useAppSelector((state) => state?.newsData?.articles);
   const newsLoading = useAppSelector((state) => state?.newsData?.loading);
+  const overViewChannels = useAppSelector((state) => state?.newsData?.overview?.sources
+  );
 
-  props = { ...props, news, newsLoading };
+  props = { ...props,overViewChannels, news, newsLoading };
   const getNews = () => {
     return dispatch(homepageSlice.getNews());
   };
 
-  return <HomepageComponent {...props} getNews={getNews} />;
+  const getOverView = () => {
+    return dispatch(homepageSlice.getOverView());
+  };
+
+  return <HomepageComponent {...props} getNews={getNews} getOverView={getOverView} />;
 };
 export default HomePageContainer;

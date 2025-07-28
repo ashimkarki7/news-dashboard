@@ -3,14 +3,33 @@ import { v2Fetch } from '@/Utility/httpUtil.ts';
 import type { NewsState } from '../types/new.ts';
 
 const initialState: NewsState = {
-  payload: [],
+  articles: [],
+  overview: null,
   error: '',
   loading: true,
 };
+export const getOverView = createAsyncThunk(
+  'newsOverviewSlice/fetch',
+  (_, { rejectWithValue }) => {
+    return v2Fetch(`/top-headlines/sources`,{})
+      .then((response: any) => {
+        if (response.status === 200) {
+          return Promise.resolve(response?.data);
+        }
+      })
+      .catch((error: any) => {
+        const errorThrown = JSON.parse(error);
+        return rejectWithValue(errorThrown?.message);
+      });
+  }
+);
+
+
 export const getNews = createAsyncThunk(
   'newsSlice/fetch',
   (_, { rejectWithValue }) => {
-    return v2Fetch(`/api/news`)
+    return v2Fetch(`/everything
+`,{q:'*'})
       .then((response: any) => {
         if (response.status === 200) {
           return Promise.resolve(response?.data);
@@ -29,7 +48,8 @@ const newsSlice = createSlice({
   reducers: {
     cleanNewsData(state) {
       state.loading = false;
-      state.payload = [];
+      state.articles = [];
+      state.overview = null;
       state.error = '';
     },
   },
@@ -37,16 +57,31 @@ const newsSlice = createSlice({
     builder.addCase(getNews.pending, (state) => {
       state.loading = true;
       state.error = '';
-      state.payload = [];
+      state.articles = [];
     });
 
     builder.addCase(getNews.fulfilled, (state, action) => {
       state.loading = false;
-      state.payload = action.payload;
+      state.articles = action.payload;
     });
     builder.addCase(getNews.rejected, (state, action) => {
       state.loading = false;
-      state.payload = [];
+      state.articles = [];
+      state.error = action.payload?.toString();
+    });
+    builder.addCase(getOverView.pending, (state) => {
+      state.loading = true;
+      state.error = '';
+      state.overview  = null;
+    });
+
+    builder.addCase(getOverView.fulfilled, (state, action) => {
+      state.loading = false;
+      state.overview = action.payload;
+    });
+    builder.addCase(getOverView.rejected, (state, action) => {
+      state.loading = false;
+      state.overview  = null;
       state.error = action.payload?.toString();
     });
   },
