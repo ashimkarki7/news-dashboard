@@ -10,7 +10,7 @@ import App from './App.tsx'
 import {ErrorBoundary} from '@/hoc/ErrorBoundary.tsx';
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+  // <StrictMode>
       <ErrorBoundary>
           <Router>
               <Provider store={store}>
@@ -19,5 +19,5 @@ createRoot(document.getElementById('root')!).render(
           </Router>
       </ErrorBoundary>
 
-  </StrictMode>,
+  // </StrictMode>,
 )

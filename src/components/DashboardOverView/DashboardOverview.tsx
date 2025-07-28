@@ -99,6 +99,8 @@ const DashboardOverview: FC<DashboardOverviewProps> = (props) => {
                                                                         query:'',
                                                                         category:'*',
                                                                         selectedChannel: metric?.id,
+                                                                        page: 1,
+                                                                        pageSize: 20,
                                                                     }))}
                                                                 style={{
                                                                     cursor: "pointer",

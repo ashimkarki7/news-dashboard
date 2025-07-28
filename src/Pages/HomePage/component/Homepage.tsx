@@ -1,4 +1,4 @@
-import React, {Fragment, useEffect, useState} from 'react';
+import React, {Fragment, useCallback, useEffect, useState} from 'react';
 import type { HomepageProps } from '../types/homePage';
 import DashboardOverview from '@components/DashboardOverView/DashboardOverview.tsx';
 import SearchBar from '@components/SearchBar/SearchBar.tsx';
@@ -7,23 +7,50 @@ import type {NewsFilters} from '@pages/HomePage/types/new.ts';
 import ErrorAlert from '@components/ErrorAlert/ErrorAlert.tsx';
 import LoadingSpinner from '@components/LoadingSpinner/LoadingSpinner.tsx';
 import ArticleGrid from '@components/ArticleGrid/ArticleGrid.tsx';
+import InfiniteScroll from '@components/InfiniteScroll/InfiniteScroll.tsx';
 
 
 const HomepageComponent: React.FC<HomepageProps> = (props) => {
-  const { getNews,getOverView, newsLoading,overViewChannels,overViewLoading,newsError,news } = props;
+  const { getNews,getNewsPaginated ,getOverView, newsLoading,overViewChannels,overViewLoading,newsError,news,totalResults } = props;
+
+    const hasMore = news.length < totalResults;
 
     const [filters, setFilters] = useState<NewsFilters>({
         query:'',
-        selectedChannel: null,
+        selectedChannel: '',
         category: '*',
+        page: 1,
+        pageSize: 20,
     });
 
 
     useEffect(() => {
       getOverView();
-      getNews();
+        getNews ({page: 1 ,pageSize: 20});
   }, []);
-console.log(news,'news');
+
+
+
+
+    const loadMore = useCallback(async () => {
+        const nextPage = filters.page + 1;
+        setFilters((prev) => ({ ...prev, page: nextPage }));
+
+        const paginatedFilters:any = {
+            page: nextPage,pageSize: 20
+        }
+        if (filters?.query) {
+            paginatedFilters.q = filters.query;
+            paginatedFilters.searchIn = 'title,description';
+        }  if (filters?.selectedChannel) {
+            paginatedFilters.sources = filters.selectedChannel
+        }
+
+        if (filters?.category && filters?.category !== '*') {
+            paginatedFilters.q = filters.category
+        }
+        await getNewsPaginated(paginatedFilters);
+    }, [filters, getNews]);
 
 
   return (
@@ -59,10 +86,9 @@ console.log(news,'news');
                         {newsLoading && news?.length === 0 ? (
                             <LoadingSpinner />
                         ) : (
-                            <Fragment>
+                            <InfiniteScroll loadMore={loadMore} newsLoading={newsLoading} articles={news} hasMore={hasMore}>
                                  <ArticleGrid articles={news} />
-                            </Fragment>
-
+                             </InfiniteScroll>
                         )}
                     </div>
                 </div>

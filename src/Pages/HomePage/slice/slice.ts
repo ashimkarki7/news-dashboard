@@ -9,6 +9,7 @@ const initialState: NewsState = {
   overViewLoading: true,
   error: '',
   loading: true,
+  totalResults:0
 };
 
 export const getOverView = createAsyncThunk<NewsOverviewResponse, void, { rejectValue: string }>(
@@ -66,6 +67,44 @@ export const getNews = createAsyncThunk<NewsResponse, NewsQueryParams | undefine
     }
 );
 
+export const getNewsPaginated = createAsyncThunk<NewsResponse, NewsQueryParams | undefined, { rejectValue: string }>(
+    'newsPaginationSlice/fetch',
+    async (formData, { rejectWithValue }) => {
+      try {
+        const queryParts: string[] = [];
+
+        if (formData && typeof formData === 'object') {
+          Object.entries(formData).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== '') {
+              queryParts.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
+            }
+          });
+        }
+
+        if (!formData?.q) {
+          queryParts.push(`q=*`);
+        }
+
+        const queryString = queryParts.length ? `?${queryParts.join('&')}` : '?q=*';
+
+        const response = await v2Fetch(`/everything${queryString}`);
+
+        if (response.status === 200) {
+          return Promise.resolve(response.data);
+        }
+
+        return rejectWithValue('Unexpected error');
+      } catch (error: any) {
+        try {
+          const parsed = JSON.parse(error);
+          return rejectWithValue(parsed?.message || 'Failed to fetch news');
+        } catch {
+          return rejectWithValue('Error fetching news');
+        }
+      }
+    }
+);
+
 const newsSlice = createSlice({
   name: 'newsSlice',
   initialState,
@@ -82,15 +121,34 @@ const newsSlice = createSlice({
       state.loading = true;
       state.error = '';
       state.articles = [];
+      state.totalResults = 0;
     });
 
     builder.addCase(getNews.fulfilled, (state, action: PayloadAction<NewsResponse>) => {
+      const { articles, totalResults } = action.payload;
       state.loading = false;
-      state.articles =  action.payload.articles;
+      state.articles =  articles;
+      state.totalResults = totalResults;
     });
     builder.addCase(getNews.rejected, (state, action) => {
       state.loading = false;
       state.articles = [];
+      state.error = action.payload?.toString();
+      state.totalResults = 0;
+    });
+    builder.addCase(getNewsPaginated.pending, (state) => {
+      state.loading = true;
+      state.error = '';
+    });
+
+    builder.addCase(getNewsPaginated.fulfilled, (state, action: PayloadAction<NewsResponse>) => {
+      const { articles, totalResults } = action.payload;
+      state.loading = false;
+      state.articles = [...state.articles, ...articles];
+      state.totalResults = totalResults;
+    });
+    builder.addCase(getNewsPaginated.rejected, (state, action) => {
+      state.loading = false;
       state.error = action.payload?.toString();
     });
     builder.addCase(getOverView.pending, (state) => {

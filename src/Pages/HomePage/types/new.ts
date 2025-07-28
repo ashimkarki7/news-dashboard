@@ -1,7 +1,9 @@
 export interface NewsFilters {
   query: string ;
-  selectedChannel: string | null;
-  category: string | null;
+  selectedChannel: string ;
+  category: string;
+  page: number
+  pageSize: number;
 }
 export interface NewsArticle {
   source: {
@@ -19,15 +21,17 @@ export interface NewsArticle {
   trending?: boolean
   readTime?: number
 }
-export interface NewsQueryParams {
-  skip?: number;
-  take?: number;
-  orderBy?: string;
-  orderByDesc?: string;
-  q?: string;
-  sources?: string;
-  [key: string]: string | number | undefined;
-}
+  export interface NewsQueryParams {
+    page: number,
+    pageSize: number,
+    skip?: number;
+    take?: number;
+    orderBy?: string;
+    orderByDesc?: string;
+    q?: string;
+    sources?: string;
+    [key: string]: string | number | undefined;
+  }
 
 export interface NewsResponse {
   status: string;
@@ -62,4 +66,5 @@ export interface  NewsState {
   error: string | undefined;
   overViewLoading: boolean;
   loading: boolean;
+  totalResults:number;
 }

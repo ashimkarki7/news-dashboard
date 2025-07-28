@@ -1,5 +1,5 @@
 
-import React, { useCallback, useEffect, type Dispatch, type SetStateAction} from 'react'
+import React, { useEffect, type Dispatch, type SetStateAction, useRef} from 'react'
 import {useAppDispatch, useAppSelector} from '@/store/reduxHook.ts';
 import { debounce } from '@/Utility/debounce';
 import {getNews} from '@pages/HomePage/slice/slice.ts';
@@ -13,21 +13,35 @@ interface SearchBarProps {
 }
 
 const SearchBar: React.FC<SearchBarProps> = (props) => {
-  const {filters,setFilters} = props;
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    const isFirstRender = useRef(true);
+    const {filters,setFilters} = props;
   const dispatch = useAppDispatch();
   const loading = useAppSelector((state) => state.newsData.loading);
 
-  const debouncedSearch = useCallback(
-      debounce((value: string) => {
-        const payload: NewsQueryParams = value ? { q: value,searchIn: 'title,description', sources: filters?.selectedChannel ?? '' } : {};
-        dispatch(getNews(payload));
-      }, 500),
-      [dispatch]
-  );
+    const debouncedSearch = useRef(
+        debounce((value: string, selectedChannel: string | null) => {
+            const payload: NewsQueryParams = value
+                ? {
+                    q: value,
+                    searchIn: 'title,description',
+                    sources: selectedChannel ?? '',
+                    page: 1,
+                    pageSize: 20,
+                }
+                : { page: 1, pageSize: 20 };
+            dispatch(getNews(payload));
+        }, 500)
+    ).current;
 
   useEffect(() => {
-    debouncedSearch(filters?.query.trim());
-  }, [filters?.query, debouncedSearch]);
+      if (isFirstRender.current) {
+          isFirstRender.current = false;
+          return;
+      }
+      debouncedSearch(filters.query.trim(), filters.selectedChannel);
+  }, [filters?.query]);
 
   const handleClear = () => {
       setFilters((prev) => ({
@@ -35,8 +49,17 @@ const SearchBar: React.FC<SearchBarProps> = (props) => {
           query: '',
           category:'',
           selectedChannel: '',
+          page: 1,
+          pageSize: 20,
       }));
-    dispatch(getNews({}));
+    dispatch(getNews({ page: 1, pageSize: 20}) )
+        .then(() => {
+            console.log('in')
+            inputRef.current?.focus();
+        })
+        .catch((err) => {
+            console.error('API call failed:', err);
+        });
   };
 
   return (
@@ -46,6 +69,7 @@ const SearchBar: React.FC<SearchBarProps> = (props) => {
             <div className="col-md-8 col-lg-6">
               <div className="input-group input-group-lg">
                 <input
+                    ref={inputRef}
                     type="text"
                     className="form-control bg-dark bg-opacity-25 border-light border-opacity-25 text-white"
                     placeholder="Search breaking news, trending topics, or specific stories..."
@@ -56,6 +80,8 @@ const SearchBar: React.FC<SearchBarProps> = (props) => {
                             query: e.target.value,
                             category:'',
                             selectedChannel: '',
+                            page: 1,
+                            pageSize: 20,
                         }))
                        }
                     disabled={loading}
