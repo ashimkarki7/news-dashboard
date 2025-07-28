@@ -44,7 +44,7 @@ const DashboardOverview: FC<DashboardOverviewProps> = (props) => {
                                 <div className="carousel-item active">
                                     <div className="row g-3 g-md-4 justify-content-center">
                                         {Array.from({ length: 3 }).map((_, index) => (
-                                            <div key={index} className="col-12 col-sm-6 col-lg-4">
+                                            <div key={index} className="col-12 col-sm-6 col-lg-4" id={`card${index}`}>
                                                 <div className="card bg-dark bg-opacity-25 border-light border-opacity-25 h-100">
                                                     <div className="card-body">
                                                         <div className="d-flex align-items-center justify-content-between mb-3">
@@ -91,7 +91,7 @@ const DashboardOverview: FC<DashboardOverviewProps> = (props) => {
                                                 <div className="row g-3 g-md-4 justify-content-center">
                                                     {overViewChannels?.slice(slideIndex * 3, slideIndex * 3 + 3)?.map((metric, index) => (
                                                         <div key={slideIndex * 3 + index} className="col-12 col-sm-6 col-lg-4"
-                                                        >
+                                                             id={`card${index}`}>
                                                             <div
                                                                 onClick={() =>
                                                                     setFilters((prev) => ({
@@ -144,7 +144,7 @@ const DashboardOverview: FC<DashboardOverviewProps> = (props) => {
                     </div>
 
                     <div className="text-center">
-                        <div className="carousel-indicators position-static m-0 d-inline-flex">
+                        <div className="carousel-indicators position-static m-0 d-inline-flex  d-none d-md-block">
                             {overViewChannels?.length > 0 && Array.from({length: Math.ceil(overViewChannels?.length / 3)}).map((_, index) => (
                                 <button
                                     key={index}

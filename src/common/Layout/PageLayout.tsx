@@ -1,5 +1,6 @@
 import { Header } from '@common/Header/Header.tsx';
 import ScrollProgress from '@components/ScrollProgress.tsx';
+import FloatingActionButton from '@components/FloatingActionButton.tsx';
 
 const PageLayout = (props: any) => {
   return (
@@ -9,6 +10,7 @@ const PageLayout = (props: any) => {
         <main className="container-fluid py-4">
         <div id={'viewContent'}>{props.children}</div>
       </main>
+        <FloatingActionButton />
     </div>
   );
 };

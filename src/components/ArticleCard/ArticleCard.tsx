@@ -1,5 +1,3 @@
-"use client"
-
 import React, { useState, useCallback } from "react"
 import type {NewsArticle} from '@pages/HomePage/types/new.ts';
 import LazyImage from '@components/LazyImage/LazyImage.tsx';

@@ -1,5 +1,5 @@
 import HeaderStyles from '../Header/Header.module.css';
-import {NavLink} from 'react-router';
+import { NavLink,Link  } from 'react-router-dom';
 
 export const Header = () => {
   return (
@@ -7,16 +7,19 @@ export const Header = () => {
       <div className="container-fluid">
         <nav className="navbar navbar-expand-lg">
           <div className="container-fluid">
-            <a className="navbar-brand d-flex align-items-center" href="#">
+            <Link className="navbar-brand d-flex align-items-center" to="/">
               <i className="fas fa-newspaper me-3 fs-2 text-white"></i>
               <span className="gradient-text fs-2 fw-bold">NewsHub Pro</span>
-            </a>
+            </Link>
 
             <button
                 className="navbar-toggler border-0"
                 type="button"
                 data-bs-toggle="collapse"
                 data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
                 style={{ color: "white" }}
             >
               <i className="fas fa-bars text-white"></i>
