@@ -1,6 +1,7 @@
 import HomepageComponent from '@pages/HomePage/component';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHook.ts';
 import * as homepageSlice from '../slice/slice.ts';
+import type {NewsQueryParams} from '@pages/HomePage/types/new.ts';
 
 const HomePageContainer = (props: any) => {
   const dispatch = useAppDispatch();
@@ -12,8 +13,8 @@ const HomePageContainer = (props: any) => {
 
 
   props = { ...props,overViewChannels, news, newsLoading,overViewLoading };
-  const getNews = () => {
-    return dispatch(homepageSlice.getNews());
+  const getNews = (formData?:NewsQueryParams) => {
+    return dispatch(homepageSlice.getNews(formData));
   };
 
   const getOverView = () => {

@@ -2,14 +2,12 @@ import axios from 'axios';
 
 export const httpBase = () => {
   const baseURL3001 = import.meta.env.VITE_APP_URL;
+  const getApiKey = import.meta.env.VITE_NEWS_API_KEY;
 
   const V2Headers = {
     Accept: '*',
-
+    'X-Api-Key':getApiKey
   };
-
-  // response_object.header("Access-Control-Allow-Origin", "*");
-  // response_object.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
   const api = axios.create({
     baseURL: `${baseURL3001}`,

@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 import { v2Fetch } from '@/Utility/httpUtil.ts';
-import type { NewsState } from '../types/new.ts';
+import type {NewsOverviewResponse, NewsQueryParams, NewsResponse, NewsState} from '../types/new.ts';
 
 const initialState: NewsState = {
   articles: [],
@@ -9,7 +10,8 @@ const initialState: NewsState = {
   error: '',
   loading: true,
 };
-export const getOverView = createAsyncThunk(
+
+export const getOverView = createAsyncThunk<NewsOverviewResponse, void, { rejectValue: string }>(
   'newsOverviewSlice/fetch',
   (_, { rejectWithValue }) => {
     return v2Fetch(`/top-headlines/sources`,{})
@@ -26,21 +28,42 @@ export const getOverView = createAsyncThunk(
 );
 
 
-export const getNews = createAsyncThunk(
-  'newsSlice/fetch',
-  (_, { rejectWithValue }) => {
-    return v2Fetch(`/everything
-`,{q:'*'})
-      .then((response: any) => {
-        if (response.status === 200) {
-          return Promise.resolve(response?.data);
+export const getNews = createAsyncThunk<NewsResponse, NewsQueryParams | undefined, { rejectValue: string }>(
+    'newsSlice/fetch',
+    async (formData, { rejectWithValue }) => {
+      try {
+        const queryParts: string[] = [];
+
+        if (formData && typeof formData === 'object') {
+          Object.entries(formData).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== '') {
+              queryParts.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
+            }
+          });
         }
-      })
-      .catch((error: any) => {
-        const errorThrown = JSON.parse(error);
-        return rejectWithValue(errorThrown?.message);
-      });
-  }
+
+        if (!formData?.q) {
+          queryParts.push(`q=*`);
+        }
+
+        const queryString = queryParts.length ? `?${queryParts.join('&')}` : '?q=*';
+
+        const response = await v2Fetch(`/everything${queryString}`);
+
+        if (response.status === 200) {
+          return Promise.resolve(response.data);
+        }
+
+        return rejectWithValue('Unexpected error');
+      } catch (error: any) {
+        try {
+          const parsed = JSON.parse(error);
+          return rejectWithValue(parsed?.message || 'Failed to fetch news');
+        } catch {
+          return rejectWithValue('Error fetching news');
+        }
+      }
+    }
 );
 
 const newsSlice = createSlice({
@@ -61,9 +84,9 @@ const newsSlice = createSlice({
       state.articles = [];
     });
 
-    builder.addCase(getNews.fulfilled, (state, action) => {
+    builder.addCase(getNews.fulfilled, (state, action: PayloadAction<NewsResponse>) => {
       state.loading = false;
-      state.articles = action.payload;
+      state.articles =  action.payload.articles;
     });
     builder.addCase(getNews.rejected, (state, action) => {
       state.loading = false;
@@ -76,7 +99,7 @@ const newsSlice = createSlice({
       state.overview  = null;
     });
 
-    builder.addCase(getOverView.fulfilled, (state, action) => {
+    builder.addCase(getOverView.fulfilled, (state,  action: PayloadAction<NewsOverviewResponse>) => {
       state.overViewLoading = false;
       state.overview = action.payload;
     });

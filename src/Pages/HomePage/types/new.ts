@@ -12,6 +12,27 @@ export interface NewsArticle {
   publishedAt: string;
   content: string | null;
 }
+export interface NewsQueryParams {
+  skip?: number;
+  take?: number;
+  orderBy?: string;
+  orderByDesc?: string;
+  q?: string;
+  sources?: string;
+  [key: string]: string | number | undefined;
+}
+
+export interface NewsResponse {
+  status: string;
+  totalResults: number;
+  articles: NewsArticle[];
+}
+
+export interface NewsOverviewResponse {
+  status: string;
+  sources: NewsSource[];
+}
+
 
 
 export interface NewsSource {

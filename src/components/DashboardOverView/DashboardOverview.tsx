@@ -17,7 +17,7 @@ const DashboardOverview: FC<DashboardOverviewProps> = (props) => {
             <div className="d-flex  align-items-center mb-4 ">
                 <h2 className="text-white fw-bold mb-0 ">
                     <i className="fas fa-chart-line me-3"></i>
-                    Sources
+                    {`Sources ${selectedChannel ? `from ${selectedChannel}` : ''}`}
                 </h2>
             </div>
 
